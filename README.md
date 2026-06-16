@@ -18,37 +18,7 @@ A modern, full-stack web application designed to connect households with trusted
 *   **Styling**: Custom Vanilla CSS with responsive design principles.
 *   **Backend / Database**: Designed for integration with [Supabase](https://supabase.com/) (PostgreSQL & Auth).
 
-## Getting Started 🚀
 
-### Prerequisites
-Make sure you have Node.js and npm installed on your machine.
-
-### Installation
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/anjali100567/sahayak.git
-    cd sahayak
-    ```
-
-2.  Install the dependencies:
-    ```bash
-    npm install
-    ```
-
-3.  Run the development server:
-    ```bash
-    npm run dev
-    ```
-
-4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Database Setup (Supabase) 🗄️
-
-The project includes a database schema ready for Supabase.
-1. Create a new project on Supabase.
-2. Navigate to the SQL Editor and run the SQL script located in `supabase/schema.sql`.
-3. Add your `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to a `.env.local` file in the root directory.
 
 ## Project Structure 📁
 
