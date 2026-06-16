@@ -1,141 +1,134 @@
 import Link from 'next/link';
 import Navbar from '../../../components/Navbar';
-
-// Reuse mock data for now
-const MOCK_WORKERS = {
-  '1': {
-    name: 'Rajesh Kumar',
-    category: 'Electrician',
-    yearsExperience: 5,
-    rating: 4.8,
-    reviewCount: 120,
-    avatarUrl: 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    hourlyRate: 20,
-    bio: 'Hi, I am Rajesh. I have been working as a professional electrician for over 5 years. I specialize in residential wiring, fault finding, and appliance installation. Safety and quality are my top priorities.',
-    reviews: [
-      { id: 1, user: 'Anita D.', rating: 5, comment: 'Rajesh was very professional and fixed our short circuit issue quickly.' },
-      { id: 2, user: 'Sanjay P.', rating: 4, comment: 'Good work, arrived slightly late but the job was done well.' }
-    ]
-  },
-  '2': {
-    name: 'Sunita Sharma',
-    category: 'Maid',
-    yearsExperience: 8,
-    rating: 4.9,
-    reviewCount: 205,
-    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    hourlyRate: 15,
-    bio: 'Experienced housemaid providing deep cleaning, cooking, and general housekeeping services. I bring my own eco-friendly supplies upon request.',
-    reviews: [
-      { id: 1, user: 'Neha M.', rating: 5, comment: 'Sunita is a lifesaver. Extremely thorough and trustworthy.' }
-    ]
-  }
-};
+import { WORKERS, REVIEWS } from '../../../lib/mockData';
 
 export default async function ProfilePage(props) {
   const params = await props.params;
-  // Hardcode to worker 1 if not found for demo purposes
-  const worker = MOCK_WORKERS[params.id] || MOCK_WORKERS['1'];
+  const worker = WORKERS.find(w => w.id === params.id) || WORKERS[0];
+  const reviews = REVIEWS.filter(r => r.workerId === params.id);
+
+  const renderStars = (rating) => {
+    let stars = '';
+    for (let i = 0; i < Math.floor(rating); i++) stars += '★';
+    if (rating % 1 >= 0.5) stars += '☆';
+    return stars;
+  };
 
   return (
     <>
       <Navbar />
-      <main className="container animate-fade-in" style={{ paddingBottom: '4rem' }}>
-        
-        {/* Back Link */}
-        <Link href="/search" style={{ 
-          color: '#334155', 
-          textDecoration: 'none', 
-          display: 'inline-flex', 
-          alignItems: 'center',
-          gap: '0.5rem',
-          marginBottom: '1.5rem', 
-          fontWeight: 600,
-          background: 'white',
-          padding: '0.5rem 1rem',
-          borderRadius: '8px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-        }}>
-          <span>&larr;</span> Back to Search
+      <main className="container animate-fade-in" style={{ paddingBottom: '4rem', paddingTop: '1.5rem' }}>
+
+        <Link href="/search" className="btn btn-secondary" style={{ marginBottom: '1.5rem', borderRadius: 'var(--radius-sm)', padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
+          ← Back to Search
         </Link>
 
         <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-          
-          {/* Main Info Column */}
-          <div style={{ flex: '1 1 600px' }}>
-            <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-              <div style={{
-                width: '150px',
-                height: '150px',
-                borderRadius: '50%',
-                overflow: 'hidden',
-                boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
-              }}>
-                <img src={worker.avatarUrl} alt={worker.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              
-              <div style={{ flex: 1, minWidth: '250px' }}>
-                <h1 style={{ marginBottom: '0.5rem', color: 'var(--text-main)' }}>{worker.name}</h1>
-                <p style={{ fontSize: '1.1rem', color: 'var(--primary-dark)', fontWeight: 500, marginBottom: '0.5rem' }}>
-                  {worker.category} • {worker.yearsExperience} Years Experience
-                </p>
-                
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                  <span style={{ color: '#facc15', fontSize: '1.2rem' }}>★</span>
-                  <span style={{ fontWeight: 700, fontSize: '1.2rem' }}>{worker.rating.toFixed(1)}</span>
-                  <span style={{ color: 'var(--text-muted)' }}>({worker.reviewCount} Reviews)</span>
+
+          {/* Main Content */}
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <div className="glass-card" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div style={{ width: '120px', height: '120px', borderRadius: 'var(--radius)', overflow: 'hidden', flexShrink: 0, border: '3px solid var(--primary-glow)' }}>
+                  <img src={worker.avatarUrl} alt={worker.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>About Me</h3>
-                <p style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>{worker.bio}</p>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '0.3rem' }}>
+                    <h1 style={{ margin: 0, fontSize: '1.8rem' }}>{worker.name}</h1>
+                    {worker.verified && <span className="badge badge-verified">✓ Verified</span>}
+                  </div>
+                  <p style={{ color: 'var(--primary)', fontWeight: 600, margin: '0 0 0.4rem 0', fontSize: '1.05rem' }}>{worker.categoryLabel}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <span style={{ color: '#facc15' }}>{renderStars(worker.rating)} {worker.rating}</span>
+                    <span>·</span>
+                    <span>{worker.reviewCount} reviews</span>
+                    <span>·</span>
+                    <span>{worker.yearsExperience} years exp</span>
+                  </div>
+                  <div style={{ marginTop: '0.5rem' }}>
+                    {worker.availability === 'available' ? (
+                      <span className="badge badge-available"><span className="pulse-dot"></span> Available Now</span>
+                    ) : (
+                      <span className="badge badge-busy">Currently Busy</span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Reviews Section */}
-            <div>
-              <h2 style={{ marginBottom: '1.5rem' }}>Recent Reviews</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {worker.reviews.map(review => (
-                  <div key={review.id} className="glass" style={{ padding: '1.5rem', border: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <span style={{ fontWeight: 600 }}>{review.user}</span>
-                      <span style={{ color: '#facc15' }}>{'★'.repeat(review.rating)}{'☆'.repeat(5-review.rating)}</span>
-                    </div>
-                    <p style={{ margin: 0, color: 'var(--text-muted)' }}>"{review.comment}"</p>
-                  </div>
+            {/* About */}
+            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+              <h3 style={{ marginBottom: '1rem' }}>About</h3>
+              <p style={{ lineHeight: 1.8, margin: 0 }}>{worker.bio}</p>
+            </div>
+
+            {/* Skills */}
+            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Skills & Expertise</h3>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {worker.skills.map(skill => (
+                  <span key={skill} style={{ padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-full)', background: 'var(--bg-secondary)', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 500 }}>{skill}</span>
                 ))}
               </div>
             </div>
+
+            {/* Languages */}
+            <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Languages</h3>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {worker.languages.map(lang => (
+                  <span key={lang} style={{ padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-full)', background: 'var(--primary-glow)', color: 'var(--primary)', fontSize: '0.85rem', fontWeight: 600 }}>{lang}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Reviews */}
+            <div className="glass-card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ marginBottom: '1.5rem' }}>Reviews ({reviews.length})</h3>
+              {reviews.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)' }}>No reviews yet.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {reviews.map(review => (
+                    <div key={review.id} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', background: 'var(--bg)', border: '1px solid var(--border-light)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem' }}>{review.userName.charAt(0)}</div>
+                          <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{review.userName}</span>
+                        </div>
+                        <span style={{ color: '#facc15', fontSize: '0.85rem' }}>{renderStars(review.rating)}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.6 }}>{review.comment}</p>
+                      <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{review.createdAt}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Booking Sidebar */}
-          <aside style={{ width: '100%', maxWidth: '350px' }}>
-            <div className="glass-card" style={{ padding: '2rem', position: 'sticky', top: '100px' }}>
-              <h3 style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>Booking Details</h3>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.2rem' }}>
+          {/* Sidebar — Booking */}
+          <aside style={{ width: '100%', maxWidth: '320px' }}>
+            <div className="glass-card" style={{ padding: '1.5rem', position: 'sticky', top: '80px' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Booking Details</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Hourly Rate</span>
-                <span style={{ fontWeight: 700, color: 'var(--primary-dark)' }}>${worker.hourlyRate}/hr</span>
+                <span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.1rem' }}>${worker.hourlyRate}/hr</span>
               </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <span style={{ display: 'inline-block', padding: '0.3rem 0.8rem', background: '#dcfce7', color: '#166534', borderRadius: '50px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem' }}>
-                  ● Available Today
-                </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Location</span>
+                <span style={{ fontWeight: 500 }}>{worker.location}</span>
               </div>
-              
-              <Link href={`/book/${params.id}`} className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem', padding: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Phone</span>
+                <span style={{ fontWeight: 500 }}>{worker.phone}</span>
+              </div>
+              <Link href={`/book/${worker.id}`} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', borderRadius: 'var(--radius-sm)', padding: '0.8rem' }}>
                 Request Booking
               </Link>
-              
-              <button className="btn btn-secondary" style={{ width: '100%', padding: '1rem' }}>
-                Message Worker
-              </button>
-
-              <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '1rem' }}>
-                You won't be charged yet.
-              </p>
+              <Link href={`/review/${worker.id}`} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', borderRadius: 'var(--radius-sm)', padding: '0.8rem', marginTop: '0.8rem' }}>
+                Write a Review
+              </Link>
             </div>
           </aside>
 
